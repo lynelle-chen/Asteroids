@@ -3,11 +3,12 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 var kbd;
 var spaceship;
-var asteroid;
+var laser;
 
 function preload() {
     game.load.image('spaceship', 'spaceship.gif');
-    game.load.image('asteroid', 'laser.png'); 
+    game.load.image('laser', 'laser.png'); 
+    game.load.image('asteroid', 'asteroid.png');
     
     kbd = game.input.keyboard.createCursorKeys();
 
@@ -30,21 +31,36 @@ function create() {
    spaceship.body.collideWorldBounds = false;
    spaceship.body.setCircle(15)
    
-   asteroid = game.add.sprite (300, 300, 'asteroid'); 
-   asteroid.anchor.set(1);
+   laser = game.add.sprite (300, 300, 'laser'); 
+   laser.anchor.set(1);
     
-    //  and its physics settings
+    //asteroid
+    
+    asteroid = game.add.sprite ((Math.random() * game.world.bounds.width), (Math.random() * game.world.bounds.height), 'asteroid');
+    
     game.physics.enable(asteroid, Phaser.Physics.ARCADE);
  
     asteroid.body.velocity.x = 67;
     asteroid.body.velocity.y = 139;
     asteroid.body.angularVelocity = 30;
 
-    asteroid.speed = 100;
+    asteroid.speed = 50;
+    asteroid.body.collideWorldBounds = true;
+    
+    
+    //laser
+   
+    game.physics.enable(laser, Phaser.Physics.ARCADE);
+ 
+    laser.body.velocity.x = 67;
+    laser.body.velocity.y = 139;
+    laser.body.angularVelocity = 30;
+
+    laser.speed = 100;
     
     //  This is the collision rule
-   asteroid.body.collideWorldBounds = true;
-   asteroid.body.setCircle(15)
+   laser.body.collideWorldBounds = true;
+   laser.body.setCircle(15)
     
     
 
@@ -53,7 +69,24 @@ function create() {
 
 function update() {
     
-    // check position
+    // asteroid position
+    if (asteroid.position.x > game.world.bounds.width) {
+        spaceship.position.x = 0
+    }
+    
+    if (asteroid.position.x < 0) {
+        asteroid.position.x = game.world.bounds.width
+    }
+    
+    if (asteroid.position.y > game.world.bounds.height) {
+        asteroid.position.y = 0
+    }
+    
+    if (asteroid.position.y < 0) {
+        asteroid.position.y = game.world.bounds.height
+    }
+    
+    // spaceship position
     if (spaceship.position.x > game.world.bounds.width) {
         spaceship.position.x = 0
     }
@@ -69,6 +102,9 @@ function update() {
     if (spaceship.position.y < 0) {
         spaceship.position.y = game.world.bounds.height
     }
+    
+    
+    //spaceship controls
     
     if (kbd.up.isDown)  // isDown means key was pressed
     {
@@ -95,6 +131,7 @@ function update() {
     {
         spaceship.body.angularVelocity = 0;
     }
-
+    
+    
 
 }
